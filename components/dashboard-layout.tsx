@@ -12,9 +12,10 @@ import { CalendarModule } from '@/components/modules/calendar-module'
 import { ReportsModule } from '@/components/modules/reports-module'
 import { TicketsModule } from '@/components/modules/tickets-module'
 import { FinanceModule } from '@/components/modules/finance-module'
-import { Users, TrendingUp, CheckSquare, Target, Calendar, BarChart3, Headset, CircleDollarSign } from 'lucide-react'
+import { Users, TrendingUp, CheckSquare, Target, Calendar, BarChart3, Headset, CircleDollarSign, Sparkles } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { getDashboardStats } from '@/app/actions/crm'
+import { seedMockData } from '@/app/actions/seed'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 type ModuleType = 'contacts' | 'sales' | 'tasks' | 'campaigns' | 'calendar' | 'reports' | 'tickets' | 'finance' | 'home'
@@ -55,12 +56,14 @@ export function DashboardLayout({ user }: DashboardLayoutProps) {
 function HomeModule({ onModuleChange }: { onModuleChange: (module: ModuleType) => void }) {
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [isSeeding, setIsSeeding] = useState(false)
 
   useEffect(() => {
     loadStats()
   }, [])
 
   async function loadStats() {
+    setLoading(true)
     try {
       const data = await getDashboardStats()
       setStats(data)
@@ -71,15 +74,41 @@ function HomeModule({ onModuleChange }: { onModuleChange: (module: ModuleType) =
     }
   }
 
+  async function handleSeed() {
+    setIsSeeding(true)
+    try {
+      await seedMockData()
+      await loadStats()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsSeeding(false)
+    }
+  }
+
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
 
   return (
     <div className="p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-foreground mb-2">CRM Dashboard&apos;a Hoş Geldiniz </h1>
-        <p className="text-muted-foreground mb-8">
-          İşletmenizin güncel durumunu tek bakışta inceleyin.
-        </p>
+        <div className="flex justify-between items-end mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">CRM Dashboard&apos;a Hoş Geldiniz </h1>
+            <p className="text-muted-foreground">
+              İşletmenizin güncel durumunu tek bakışta inceleyin.
+            </p>
+          </div>
+          {stats && stats.metrics.totalContacts === 0 && (
+            <Button 
+              onClick={handleSeed} 
+              disabled={isSeeding} 
+              className="bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white shadow-lg shadow-blue-500/25 transition-all animate-in fade-in zoom-in duration-500"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              {isSeeding ? 'Veriler Yükleniyor...' : 'Demo Veri Yükle'}
+            </Button>
+          )}
+        </div>
 
         {loading ? (
           <div className="text-center py-12 text-muted-foreground">Veriler yükleniyor...</div>
@@ -93,22 +122,28 @@ function HomeModule({ onModuleChange }: { onModuleChange: (module: ModuleType) =
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-              <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+              <div className="bg-card/50 backdrop-blur-md border border-border/50 rounded-xl p-6 shadow-xl shadow-black/5 flex flex-col hover:border-primary/30 transition-colors">
                 <h3 className="text-lg font-semibold mb-6">Aşamalara Göre Fırsatlar</h3>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={stats.charts.pipeline}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                      <defs>
+                        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={1}/>
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" opacity={0.2} />
                       <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
                       <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                      <RechartsTooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', borderRadius: '8px', color: '#fff' }} />
-                      <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                      <RechartsTooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--foreground)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                      <Bar dataKey="count" fill="url(#colorCount)" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col">
+              <div className="bg-card/50 backdrop-blur-md border border-border/50 rounded-xl p-6 shadow-xl shadow-black/5 flex flex-col hover:border-primary/30 transition-colors">
                 <h3 className="text-lg font-semibold mb-6">Görev Durumları</h3>
                 <div className="flex-1 min-h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
@@ -153,9 +188,10 @@ function MetricCard({ title, value, icon: Icon, trend, onClick }: { title: strin
     <button
       type="button"
       onClick={onClick}
-      className="text-left w-full bg-card border border-border rounded-xl p-6 shadow-sm flex items-center justify-between hover:shadow-md hover:border-primary/40 transition-all"
+      className="group text-left w-full bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-xl shadow-black/5 flex items-center justify-between hover:shadow-2xl hover:shadow-primary/10 hover:border-primary/40 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
     >
-      <div>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="relative z-10">
         <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
         <h4 className="text-2xl font-bold text-foreground">{value}</h4>
       </div>
