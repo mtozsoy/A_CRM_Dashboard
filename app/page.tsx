@@ -5,11 +5,13 @@ import { DashboardLayout } from '@/components/dashboard-layout'
 export default async function HomePage() {
   const session = await auth.api.getSession({ headers: await headers() })
 
-  const user = session?.user || {
-    id: 'demo-user-id',
-    name: 'Demo Kullanıcı',
-    email: 'demo@crm.com',
-    image: null
+  const sessionUser = session?.user
+
+  const user = {
+    id: sessionUser?.id || 'demo-user-id',
+    name: sessionUser?.name || 'Demo Kullanıcı',
+    email: sessionUser?.email || 'demo@crm.com',
+    image: sessionUser?.image || null
   }
 
   return <DashboardLayout user={user} />
