@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/button'
 import { authClient } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
-import { Home, Users, TrendingUp, CheckSquare, Target, Calendar, BarChart3, LogOut, Headset } from 'lucide-react'
+import { Home, Users, TrendingUp, CheckSquare, Target, Calendar, BarChart3, LogOut, Headset, Wallet } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-type ModuleType = 'contacts' | 'sales' | 'tasks' | 'campaigns' | 'calendar' | 'reports' | 'tickets' | 'home'
+type ModuleType = 'contacts' | 'sales' | 'tasks' | 'campaigns' | 'calendar' | 'reports' | 'tickets' | 'finance' | 'home'
 
 interface MenuItem {
   id: ModuleType
@@ -23,6 +23,7 @@ const menuItems: MenuItem[] = [
   { id: 'calendar', label: 'Takvim', icon: Calendar },
   { id: 'reports', label: 'Raporlar', icon: BarChart3 },
   { id: 'tickets', label: 'Destek', icon: Headset },
+  { id: 'finance', label: 'Finans', icon: Wallet },
 ]
 
 interface DashboardSidebarProps {

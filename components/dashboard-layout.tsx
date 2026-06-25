@@ -11,12 +11,13 @@ import { CampaignsModule } from '@/components/modules/campaigns-module'
 import { CalendarModule } from '@/components/modules/calendar-module'
 import { ReportsModule } from '@/components/modules/reports-module'
 import { TicketsModule } from '@/components/modules/tickets-module'
+import { FinanceModule } from '@/components/modules/finance-module'
 import { Users, TrendingUp, CheckSquare, Target, Calendar, BarChart3, Headset, CircleDollarSign } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { getDashboardStats } from '@/app/actions/crm'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
-type ModuleType = 'contacts' | 'sales' | 'tasks' | 'campaigns' | 'calendar' | 'reports' | 'tickets' | 'home'
+type ModuleType = 'contacts' | 'sales' | 'tasks' | 'campaigns' | 'calendar' | 'reports' | 'tickets' | 'finance' | 'home'
 
 interface DashboardLayoutProps {
   user: {
@@ -44,6 +45,7 @@ export function DashboardLayout({ user }: DashboardLayoutProps) {
           {activeModule === 'calendar' && <CalendarModule />}
           {activeModule === 'reports' && <ReportsModule />}
           {activeModule === 'tickets' && <TicketsModule />}
+          {activeModule === 'finance' && <FinanceModule />}
         </main>
       </div>
     </div>

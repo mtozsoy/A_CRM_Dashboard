@@ -177,3 +177,32 @@ export const supportTickets = pgTable('support_tickets', {
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
+
+// --- FINANCE (Mini-ERP) Tables ---
+
+export const accounts = pgTable('accounts', {
+  id: serial('id').primaryKey(),
+  userId: text('userId').notNull(),
+  name: text('name').notNull(),
+  type: text('type').notNull().default('bank'), // bank, cash, credit_card
+  currency: text('currency').notNull().default('TRY'),
+  initialBalance: decimal('initialBalance', { precision: 14, scale: 2 }).default('0'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
+export const transactions = pgTable('transactions', {
+  id: serial('id').primaryKey(),
+  userId: text('userId').notNull(),
+  accountId: integer('accountId').notNull(),
+  type: text('type').notNull(), // income, expense, transfer
+  amount: decimal('amount', { precision: 14, scale: 2 }).notNull(),
+  category: text('category').notNull(),
+  description: text('description'),
+  date: timestamp('date').notNull().defaultNow(),
+  relatedContactId: integer('relatedContactId'),
+  relatedOpportunityId: integer('relatedOpportunityId'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
