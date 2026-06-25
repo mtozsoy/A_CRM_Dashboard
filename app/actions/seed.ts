@@ -10,6 +10,7 @@ import {
 } from '@/lib/db/schema'
 import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
+import { eq } from 'drizzle-orm'
 
 async function getUserId() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -58,7 +59,7 @@ export async function seedMockData() {
   const userId = await getUserId()
 
   // Sadece eğer hiç data yoksa seed yapalım
-  const existingContacts = await db.select().from(contacts).where({ userId } as any)
+  const existingContacts = await db.select().from(contacts).where(eq(contacts.userId, userId))
   if (existingContacts.length > 0) {
     return { success: false, message: 'Zaten veri bulunuyor.' }
   }
