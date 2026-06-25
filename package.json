@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "seed:crm": "tsx --env-file=.env scripts/seed-crm.ts",
+    "seed:tickets": "tsx --env-file=.env scripts/seed-tickets.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.74",
